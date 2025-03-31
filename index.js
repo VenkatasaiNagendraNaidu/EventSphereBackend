@@ -4,6 +4,7 @@ const connectDB = require('./config/db');
 const studentRoutes = require('./routes/Student'); 
 const facultyRoutes = require('./routes/Faculty'); 
 const organizerRoutes = require('./routes/Organizer');
+const EvventRoutes = require('./routes/Events');
 const adminRoutes = require('./routes/Admin');
 const cors = require('cors'); 
 
@@ -21,6 +22,7 @@ app.use('/api/student', studentRoutes);
 app.use('/api/faculty', facultyRoutes);
 app.use('/api/organizer', organizerRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/event', EvventRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to the Event Registration Backend!');
