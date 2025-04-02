@@ -5,6 +5,8 @@ const facultySchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   department: { type: String, required: true },
   gender: { type: String, required: true },
+  approved: { type: String, required: true,default:false},
+
   createdAt: { type: Date, default: Date.now }
 });
 
