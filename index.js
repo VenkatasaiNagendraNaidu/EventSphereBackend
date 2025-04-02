@@ -23,7 +23,7 @@ app.use('/api/student', studentRoutes);
 app.use('/api/faculty', facultyRoutes);
 app.use('/api/organizer', organizerRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api/event', EvventRoutes);
+app.use('/api/events', EvventRoutes);
 
 // app.get('/', (req, res) => {
 //   res.send('Welcome to the Event Registration Backend!');

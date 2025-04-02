@@ -22,16 +22,9 @@ router.post("/register-faculty", async (req, res) => {
     await newFaculty.save();
 
     // Send confirmation email
-<<<<<<< HEAD
-    // const subject = "Faculty Registration Successful - Awaiting Approval";
-    // const message = `Dear ${name},\n\nYou have successfully registered as a faculty member. Please wait for admin approval. Your login credentials will be sent after approval.\n\nBest regards,\nTeam`;
-    // await sendMail(email, subject, message);
-
-=======
     const subject = "Faculty Registration Successful - Awaiting Approval";
     const message = `Dear ${name},\n\nYou have successfully registered as a faculty member. Please wait for admin approval. Your login credentials will be sent after approval.\n\nBest regards,\nTeam`;
     await sendMail(email, subject, message);
->>>>>>> 7f83ec6aa850c3934811daf72dff267988a7e45a
     res.status(200).json({ message: "Faculty registered successfully!" });
   } catch (error) {
     res.status(500).json({ message: "Server error. Please try again." });

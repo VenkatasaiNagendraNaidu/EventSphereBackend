@@ -5,23 +5,33 @@ const Organizer = require("../models/Organizer");
 
 
 router.post("/add-event", async (req, res) => {
-    const { eventName, eventDate, eventTime, location, category, department, description, imageUrl, organizerId } = req.body;
+    const { eventName, 
+      eventStartDate, 
+      eventEndDate, 
+      location, 
+      category, 
+      department, 
+      description, 
+      imageUrl,  } = req.body;
+      console.log('====================================');
+      console.log(req.body);
+      console.log('====================================');
   
-    if (!eventName || !eventDate || !eventTime || !location || !category || !department || !description || !imageUrl || !organizerId) {
+    if (!eventName || !eventStartDate || !eventEndDate || !location || !category || !department || !description || !imageUrl) {
       return res.status(400).json({ message: "All fields are required!" });
     }
   
     try {
       const newEvent = new Event({ 
         eventName, 
-        eventDate, 
-        eventTime, 
+        eventStartDate, 
+        eventEndDate, 
         location, 
         category, 
         department, 
         description, 
         imageUrl, 
-        organizer: organizerId 
+        // organizer: organizerId 
       });
   
       await newEvent.save();
