@@ -23,7 +23,6 @@ router.post("/register-admin", async (req, res) => {
 
     await newAdmin.save();
 
-    // Send confirmation email
     const subject = "Admin Registration Successful - Awaiting Approval";
     const message = `Dear ${name},\n\nYou have successfully registered as an admin. Please wait for admin approval. Your login credentials will be sent after approval.\n\nBest regards,\nTeam`;
     await sendMail(email, subject, message);
