@@ -1,6 +1,7 @@
 const Student = require("../models/Student");
 const Faculty = require("../models/Faculty");
 const Organizer = require("../models/Organizer");
+const Registration = require("../models/Viewdetails");
 const generatePassword = require("../utils/generatePassword");
 const sendCredentialsEmail = require("../utils/sendMail");
 
@@ -64,8 +65,56 @@ const declineRegistration = async (req, res) => {
   }
 };
 
+// Get registrations by event ID
+const getRegistrationsByEventId = async (req, res) => {
+  const { eventId } = req.params;
+
+  try {
+    const registrations = await Registration.find({ eventId });
+
+    const detailedRegistrations = await Promise.all(
+      registrations.map(async (reg) => {
+        const student = await Student.findById(reg.userId);
+        return {
+          userId: reg.userId,
+          status: reg.status,
+          name: student?.name,
+          email: student?.email,
+          rollNumber: student?.rollNumber,
+        };
+      })
+    );
+
+    res.json(detailedRegistrations);
+  } catch (err) {
+    res.status(500).json({ message: "Failed to get registrations", error: err });
+  }
+};
+
+// Update registration status (approve/decline)
+const updateRegistrationStatus = async (req, res) => {
+  const { eventId, userId } = req.params;
+  const { status } = req.body;
+
+  try {
+    const updated = await Registration.findOneAndUpdate(
+      { eventId, userId },
+      { status },
+      { new: true }
+    );
+
+    if (!updated) return res.status(404).json({ message: "Registration not found" });
+
+    res.json({ message: `User ${status}` });
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update status", error: err });
+  }
+};
+
 module.exports = {
   getPendingRegistrations,
   approveRegistration,
-  declineRegistration, // ✅ added to exports
+  declineRegistration,
+  getRegistrationsByEventId,
+  updateRegistrationStatus,
 };
