@@ -13,11 +13,13 @@ router.post("/add-event", async (req, res) => {
     department,
     description,
     imageUrl,
+    amount,
   } = req.body;
 
   if (
     !eventName || !eventStartDate || !eventEndDate ||
-    !location || !category || !department || !description || !imageUrl
+    !location || !category || !department || !description || !imageUrl || !amount
+    
   ) {
     return res.status(400).json({ message: "All fields are required!" });
   }
@@ -32,6 +34,7 @@ router.post("/add-event", async (req, res) => {
       department,
       description,
       imageUrl,
+      amount,
     });
 
     await newEvent.save();
@@ -54,5 +57,26 @@ router.get("/ucevents", async (req, res) => {
     res.status(500).json({ message: "Error fetching upcoming events." });
   }
 });
+
+
+
+// DELETE event by ID
+router.delete("/delete/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const deletedEvent = await Event.findByIdAndDelete(id);
+    if (!deletedEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+    res.json({ message: "Event deleted successfully" });
+  } catch (error) {
+    console.error("Delete error:", error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+
 
 module.exports = router;

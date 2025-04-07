@@ -10,6 +10,7 @@ const registerRoutes = require('./routes/registrationRoutes');
 const cors = require('cors'); 
 const eventRoutes = require("./routes/Events"); // Import the event routes
 const registrationRoutes = require("./routes/registrationRoutes");// view details
+const loginRoutes = require("./routes/login"); // Import the login routes
 dotenv.config(); 
 
 
@@ -27,6 +28,7 @@ app.use('/api/organizer', organizerRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/events', EvventRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/login", loginRoutes);
 app.use("/api/registrations", registrationRoutes);// view details
 // app.get('/', (req, res) => {
 //   res.send('Welcome to the Event Registration Backend!');
