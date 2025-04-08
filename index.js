@@ -11,6 +11,7 @@ const cors = require('cors');
 const eventRoutes = require("./routes/Events"); // Import the event routes
 const registrationRoutes = require("./routes/registrationRoutes");// view details
 const loginRoutes = require("./routes/login"); // Import the login routes
+const eventregister = require("./routes/eventRegistration"); // Import the registration routes
 dotenv.config(); 
 
 
@@ -21,6 +22,7 @@ connectDB();
 
 app.use(express.json());
 app.use(cors()); 
+app.use('/api/event-registration',eventregister);
 app.use('/api/registrations', registerRoutes);
 app.use('/api/student', studentRoutes);
 app.use('/api/faculty', facultyRoutes);
