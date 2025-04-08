@@ -1,20 +1,25 @@
 const express = require("express");
 const router = express.Router();
+
 const {
   getPendingRegistrations,
+  getApprovedUsers,
   approveRegistration,
   declineRegistration,
   getRegistrationsByEventId,
   updateRegistrationStatus,
 } = require("../Controllers/registrationController");
 
-// Existing routes
+// Routes for pending & approved registrations
 router.get("/pending", getPendingRegistrations);
+router.get("/approved", getApprovedUsers); // ✅ NEW: fetch approved users (students/faculty/organizers/admins)
+
+// Approve or decline user registrations
 router.post("/approve", approveRegistration);
 router.post("/decline", declineRegistration);
 
-// New routes to support frontend needs
-router.get("/event/:eventId", getRegistrationsByEventId); // Fetch all registrations for an event
-router.put("/:eventId/:userId", updateRegistrationStatus); // Approve or Decline a registration
+// Event-specific registrations
+router.get("/event/:eventId", getRegistrationsByEventId);
+router.put("/:eventId/:userId", updateRegistrationStatus);
 
 module.exports = router;
