@@ -40,7 +40,9 @@ router.put("/:registrationId", async (req, res) => {
 router.post("/register", async (req, res) => {
   try {
     const { studentId, eventId, paymentScreenshot } = req.body;
-
+    console.log('====================================');
+    console.log(req.body);
+    console.log('====================================');
     const registration = new EventRegistration({ studentId, eventId, paymentScreenshot });
     await registration.save();
 
@@ -51,14 +53,18 @@ router.post("/register", async (req, res) => {
 });
 // routes/registrations.js
 router.get("/event/:eventId", async (req, res) => {
-    try {
-      const registrations = await EventRegistration.find({ eventId: req.params.eventId })
-        .populate("studentId", "name email rollNumber"); // assuming your Student model has these fields
-      res.json(registrations);
-    } catch (err) {
-      res.status(500).json({ error: "Failed to fetch registrations" });
-    }
-  });
+  try {
+    const { eventId } = req.params;
+
+    const registrations = await EventRegistration.find({ eventId })
+      .populate("studentId", "name email rollNumber"); // populate only needed fields
+
+    res.status(200).json(registrations);
+  } catch (error) {
+    console.error("Error fetching registrations:", error);
+    res.status(500).json({ message: "Error fetching registrations", error: error.message });
+  }
+});
   
 
 module.exports = router;

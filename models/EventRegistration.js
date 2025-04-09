@@ -6,7 +6,7 @@ const eventRegistrationSchema = new mongoose.Schema({
   eventId: { type: mongoose.Schema.Types.ObjectId, ref: "Event", required: true },
   paymentScreenshot: { type: String, required: true }, // Cloudinary URL
   registeredAt: { type: Date, default: Date.now },
-  ApprovalStatus: { type: Boolean, default: "False" },
+  ApprovalStatus: { type: Boolean, default : false },
 });
 
 const EventRegistration = mongoose.model("EventRegistration", eventRegistrationSchema);
