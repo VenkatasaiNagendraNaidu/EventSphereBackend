@@ -35,8 +35,13 @@ router.post("/add-event", async (req, res) => {
     description,
     imageUrl,
     amount,
+    organizer1Name,
+    organizer1Phone,
+    organizer2Name,
+    organizer2Phone
   } = req.body;
 
+  
   if (
     !eventName || !eventStartDate || !eventEndDate ||
     !location || !category || !department ||
@@ -56,6 +61,10 @@ router.post("/add-event", async (req, res) => {
       description,
       imageUrl,
       amount,
+    organizer1Name,
+    organizer1Phone,
+    organizer2Name,
+    organizer2Phone
     });
 
     await newEvent.save();
