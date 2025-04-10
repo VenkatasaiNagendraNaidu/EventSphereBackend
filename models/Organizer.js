@@ -6,8 +6,8 @@ const organizerSchema = new mongoose.Schema({
   rollNumber: { type: String, required: true, unique: true },
   yearOfStudy: { type: Number, required: true },
   department: { type: String, required: true },
-  approved: { type: String, required: true,default:false},
-
+  password: { type: String, default: null },
+  approved: { type: Boolean, default:false},
   createdAt: { type: Date, default: Date.now }
 });
 
