@@ -63,8 +63,6 @@ router.post("/add-event", async (req, res) => {
       amount,
     organizer1Name,
     organizer1Phone,
-    organizer2Name,
-    organizer2Phone
     });
 
     await newEvent.save();

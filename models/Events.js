@@ -30,8 +30,6 @@ const eventSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   organizer1Name:{ type: String, required: false },
     organizer1Phone: { type: String, required: false },
-    organizer2Name: { type: String, required: false },
-    organizer2Phone: { type: String, required: false },
 });
 
 module.exports = mongoose.model("Event", eventSchema);

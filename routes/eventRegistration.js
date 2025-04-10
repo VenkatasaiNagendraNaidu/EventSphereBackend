@@ -1,10 +1,11 @@
-// routes/eventRegistration.js
 const express = require("express");
 const router = express.Router();
 const EventRegistration = require("../models/EventRegistration");
 const Student = require("../models/Student");
 const sendMail = require("../utils/sendMail");
-const sendEmailEvent = require ("../utils/sendRegistrationMail")
+const sendEmailEvent = require("../utils/sendRegistrationMail");
+
+// Approve/Decline Registration + Send Email
 router.put("/:registrationId", async (req, res) => {
   const { registrationId } = req.params;
   const { ApprovalStatus } = req.body;
@@ -77,15 +78,11 @@ router.put("/:registrationId", async (req, res) => {
   }
 });
 
-module.exports = router;
-
-  
+// Register for an event
 router.post("/register", async (req, res) => {
   try {
     const { studentId, eventId, paymentScreenshot } = req.body;
-    console.log('====================================');
-    console.log(req.body);
-    console.log('====================================');
+
     const registration = new EventRegistration({ studentId, eventId, paymentScreenshot });
     await registration.save();
 
@@ -94,13 +91,14 @@ router.post("/register", async (req, res) => {
     res.status(500).json({ message: "Registration failed", error: err.message });
   }
 });
-// routes/registrations.js
+
+// Get all registrations for an event
 router.get("/event/:eventId", async (req, res) => {
   try {
     const { eventId } = req.params;
 
     const registrations = await EventRegistration.find({ eventId })
-      .populate("studentId", "name email rollNumber"); // populate only needed fields
+      .populate("studentId", "name email rollNumber");
 
     res.status(200).json(registrations);
   } catch (error) {
@@ -108,6 +106,36 @@ router.get("/event/:eventId", async (req, res) => {
     res.status(500).json({ message: "Error fetching registrations", error: error.message });
   }
 });
-  
 
+// Update round status (select/not selected -> Round 2 or Eliminated)
+router.put("/updateround/:registrationId", async (req, res) => {
+  const { registrationId } = req.params;
+  const { selected } = req.body;
+
+  try {
+    const registration = await EventRegistration.findById(registrationId)
+      .populate("studentId")
+      .populate("eventId");
+
+    if (!registration) {
+      return res.status(404).json({ message: "Registration not found" });
+    }
+
+    if (selected) {
+      registration.selected = true;
+      registration.roundStatus = "Round 2";
+    } else {
+      registration.selected = false;
+      registration.roundStatus = "Eliminated";
+    }
+
+    await registration.save();
+
+    res.status(200).json({ message: "Round status updated successfully", registration });
+  } catch (error) {
+    console.error("Error updating round status:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+});
+// Update round status (select/not selected -> Round 2 or Eliminated)
 module.exports = router;
