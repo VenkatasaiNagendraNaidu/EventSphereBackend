@@ -23,7 +23,8 @@ router.post("/register-student", async (req, res) => {
       department,
       gender,
     });
-
+    console.log("New Student",newStudent);
+    
     await newStudent.save();
     console.log(newStudent);
     

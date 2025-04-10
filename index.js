@@ -6,6 +6,7 @@ const facultyRoutes = require('./routes/Faculty');
 const organizerRoutes = require('./routes/Organizer');
 const EvventRoutes = require('./routes/Events');
 const adminRoutes = require('./routes/Admin');
+const contactRoute = require("./routes/contactRoute");
 const cors = require('cors'); 
 
 dotenv.config(); 
@@ -24,6 +25,7 @@ app.use('/api/faculty', facultyRoutes);
 app.use('/api/organizer', organizerRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/events', EvventRoutes);
+app.use("/api/contact", contactRoute);
 
 // app.get('/', (req, res) => {
 //   res.send('Welcome to the Event Registration Backend!');

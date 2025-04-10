@@ -7,8 +7,7 @@ const studentSchema = new mongoose.Schema({
   yearOfStudy: { type: Number, required: true },
   department: { type: String, required: true },
   gender: { type: String, required: true },
-  approved: { type: String, required: true,default:false},
-
+  approved: { type: Boolean,default:false},
   createdAt: { type: Date, default: Date.now }
 });
 
