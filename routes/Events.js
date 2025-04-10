@@ -3,6 +3,27 @@ const router = express.Router();
 const Event = require("../models/Events");
 
 // Add Event
+router.put("/update/:id", async (req, res) => {
+  const eventId = req.params.id;
+  const updatedData = req.body;
+
+  try {
+    const updatedEvent = await Event.findByIdAndUpdate(eventId, updatedData, {
+      new: true,
+      runValidators: true,
+    });
+
+    if (!updatedEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    res.status(200).json(updatedEvent);
+  } catch (error) {
+    console.error("Update Error:", error);
+    res.status(500).json({ message: "Server error during event update" });
+  }
+});
+
 router.post("/add-event", async (req, res) => {
   const {
     eventName,
