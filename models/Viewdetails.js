@@ -14,6 +14,8 @@ const registrationSchema = new mongoose.Schema({
   name: String,
   email: String,
   rollNumber: String,
+  phoneNumber: String,
+  college: String,
   status: {
     type: String,
     enum: ["Pending", "Approved", "Declined"],

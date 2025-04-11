@@ -14,6 +14,7 @@ const loginRoutes = require("./routes/login"); // Import the login routes
 const eventregister = require("./routes/eventRegistration"); // Import the registration routes
 const contactRoute = require("./routes/contactRoute");
 const galleryRoutes = require("./routes/gallery");
+const certificateRoutes = require("./routes/certificates");
 
 dotenv.config(); 
 
@@ -37,6 +38,7 @@ app.use('/api/contact',contactRoute);
 app.use("/api/events", eventRoutes);
 app.use("/api/login", loginRoutes);
 app.use("/api/registrations", registrationRoutes);
+app.use("/api/certificates", certificateRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

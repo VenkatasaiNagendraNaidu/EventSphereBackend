@@ -2,10 +2,9 @@ const express = require("express");
 const router = express.Router();
 const EventRegistration = require("../models/EventRegistration");
 const Student = require("../models/Student");
-const sendMail = require("../utils/sendMail");
 const sendEmailEvent = require("../utils/sendRegistrationMail");
 
-// Approve/Decline Registration + Send Email
+// Approve or Decline Registration & Send Email
 router.put("/:registrationId", async (req, res) => {
   const { registrationId } = req.params;
   const { ApprovalStatus } = req.body;
@@ -25,49 +24,44 @@ router.put("/:registrationId", async (req, res) => {
     const student = registration.studentId;
     const event = registration.eventId;
 
-    if (ApprovalStatus) {
-      const subject = `🎉 You're Approved for ${event.eventName}!`;
+    const eventDateFormatted = new Date(event.eventDate).toLocaleDateString("en-GB");
 
+    if (ApprovalStatus) {
+      // Approval email
+      const subject = `🎉 You're Approved for ${event.eventName}!`;
       const message = `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
           <h2 style="color: #4CAF50;">Hi ${student.name},</h2>
           <p>You have <strong>successfully registered</strong> for the event 
-          <strong>${event.eventName}</strong> happening on 
-          <strong>${new Date(event.eventDate).toLocaleDateString("en-GB")}</strong>.</p>
+          <strong>${event.eventName}</strong> on <strong>${eventDateFormatted}</strong>.</p>
 
           <p style="color: green;"><strong>Your participation has been approved!</strong></p>
 
-          <p>Below is your event pass. Kindly present it at the event entrance.</p>
-
           <div style="border: 2px dashed #4CAF50; padding: 20px; margin: 20px auto; width: fit-content; text-align: center; background: #f0fff0;">
-            <h3 style="margin-top: 0;">🎫 Event Pass</h3>
+            <h3>🎫 Event Pass</h3>
             <p><strong>Event:</strong> ${event.eventName}</p>
-            <p><strong>Date:</strong> ${new Date(event.eventDate).toLocaleDateString("en-GB")}</p>
+            <p><strong>Date:</strong> ${eventDateFormatted}</p>
             <p><strong>Participant:</strong> ${student.name}</p>
             <p><strong>Registration ID:</strong> ${registration._id}</p>
           </div>
 
-          <p>We look forward to seeing you at the event. Thank you!</p>
+          <p>See you at the event! 🚀</p>
           <p style="color: #777;">- BITS EventSphere Team</p>
         </div>
       `;
-
       await sendEmailEvent(student.email, subject, message);
     } else {
+      // Decline email
       const subject = `⚠️ Registration Declined for ${event.eventName}`;
       const message = `
         <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
           <h2 style="color: #D32F2F;">Hi ${student.name},</h2>
-          <p>We regret to inform you that your registration for 
-          <strong>${event.eventName}</strong> on 
-          <strong>${new Date(event.eventDate).toLocaleDateString("en-GB")}</strong> has been declined.</p>
-
-          <p>If you think this is a mistake, please contact the event organizers.</p>
-
+          <p>We're sorry to inform you that your registration for 
+          <strong>${event.eventName}</strong> on <strong>${eventDateFormatted}</strong> has been declined.</p>
+          <p>If you believe this is a mistake, kindly reach out to the organizers.</p>
           <p style="color: #777;">- BITS EventSphere Team</p>
         </div>
       `;
-
       await sendEmailEvent(student.email, subject, message);
     }
 
@@ -83,11 +77,20 @@ router.post("/register", async (req, res) => {
   try {
     const { studentId, eventId, paymentScreenshot } = req.body;
 
-    const registration = new EventRegistration({ studentId, eventId, paymentScreenshot });
+    const registration = new EventRegistration({
+      studentId,
+      eventId,
+      paymentScreenshot,
+      ApprovalStatus: false,
+      selected: false,
+      roundStatus: "Not Selected",
+    });
+
     await registration.save();
 
     res.status(201).json({ message: "Registered successfully", registration });
   } catch (err) {
+    console.error("Registration failed:", err);
     res.status(500).json({ message: "Registration failed", error: err.message });
   }
 });
@@ -98,7 +101,15 @@ router.get("/event/:eventId", async (req, res) => {
     const { eventId } = req.params;
 
     const registrations = await EventRegistration.find({ eventId })
-      .populate("studentId", "name email rollNumber");
+      .populate({
+        path: "studentId",
+        select: "name email rollNumber yearOfStudy department"
+      })
+      .populate({
+        path: "eventId",
+        select: "eventName eventStartDate eventEndDate location category department description amount imageUrl organizer organizerName registrationCount tags organizer1Name organizer1Phone"
+      })
+      .sort({ createdAt: -1 });
 
     res.status(200).json(registrations);
   } catch (error) {
@@ -106,8 +117,7 @@ router.get("/event/:eventId", async (req, res) => {
     res.status(500).json({ message: "Error fetching registrations", error: error.message });
   }
 });
-
-// Update round status (select/not selected -> Round 2 or Eliminated)
+// Update Round Status (Selected / Eliminated)
 router.put("/updateround/:registrationId", async (req, res) => {
   const { registrationId } = req.params;
   const { selected } = req.body;
@@ -121,13 +131,8 @@ router.put("/updateround/:registrationId", async (req, res) => {
       return res.status(404).json({ message: "Registration not found" });
     }
 
-    if (selected) {
-      registration.selected = true;
-      registration.roundStatus = "Round 2";
-    } else {
-      registration.selected = false;
-      registration.roundStatus = "Eliminated";
-    }
+    registration.selected = selected;
+    registration.roundStatus = selected ? "Round 2" : "Eliminated";
 
     await registration.save();
 
@@ -137,5 +142,5 @@ router.put("/updateround/:registrationId", async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 });
-// Update round status (select/not selected -> Round 2 or Eliminated)
+
 module.exports = router;
