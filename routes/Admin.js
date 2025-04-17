@@ -10,18 +10,22 @@ const sendMail = require("../utils/sendMail");
 
 // Register a new Admin
 router.post("/register-admin", async (req, res) => {
-  const { name, email, adminCode, department } = req.body;
+  const { name, email, department } = req.body;
 
-  if (!name || !email || !adminCode || !department) {
+  if (!name || !email || !department) {
     return res.status(400).json({ message: "Please fill out all fields!" });
   }
 
   try {
-    const newAdmin = new Admin({ name, email, adminCode, department });
+    // 🔐 Generate a 6-digit alphanumeric admin code
+    const adminCode = crypto.randomBytes(3).toString("hex").toUpperCase();
+
+    const newAdmin = new Admin({ name, email, department, adminCode });
     await newAdmin.save();
 
     const subject = "Admin Registration Successful - Awaiting Approval";
-    const mailMessage = `Dear ${name},\n\nYou have successfully registered as an admin. Please wait for approval. Your credentials will be sent after approval.\n\nBest regards,\nEventHub Team`;
+    const mailMessage = `Dear ${name},\n\nYou have successfully registered as an admin. Please wait for approval. Your credentials will be sent after approval.\n\nYour Admin Code: ${adminCode}\n\nBest regards,\nEventHub Team`;
+
     await sendMail(email, subject, mailMessage);
 
     res.status(200).json({ message: "Admin registered successfully!" });
