@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcryptjs");
-
+const crypto = require("crypto");
 const Admin = require("../models/Admin");
 const Student = require("../models/Student");
 const Faculty = require("../models/Faculty");
@@ -24,7 +24,7 @@ router.post("/register-admin", async (req, res) => {
     await newAdmin.save();
 
     const subject = "Admin Registration Successful - Awaiting Approval";
-    const mailMessage = `Dear ${name},\n\nYou have successfully registered as an admin. Please wait for approval. Your credentials will be sent after approval.\n\nYour Admin Code: ${adminCode}\n\nBest regards,\nEventHub Team`;
+    const mailMessage = `Dear ${name},\n\nYou have successfully registered as an admin.\n\nYour Admin Code: ${adminCode}\n\nBest regards,\nEventHub Team`;
 
     await sendMail(email, subject, mailMessage);
 
