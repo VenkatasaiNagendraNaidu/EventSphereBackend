@@ -1,9 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const Student = require("../models/Student");
-const EventRegistration = require("../models/EventRegistration"); // Import the registration model
+const EventRegistration = require("../models/EventRegistration");
 const Event = require("../models/Events");
- // Assuming this is your event model
 const sendMail = require("../utils/sendMail");
 
 // Register Student Route
@@ -26,17 +25,20 @@ router.post("/register-student", async (req, res) => {
       department,
       gender,
     });
-    console.log("New Student",newStudent);
-    
+
+    console.log("New Student:", newStudent);
+
     await newStudent.save();
-    console.log(newStudent);
+    console.log("Student saved to DB:", newStudent);
 
     const subject = "Student Registration Successful - Awaiting Approval";
     const message = `Dear ${name},\n\nYou have successfully registered as a student. Please wait for admin approval. Your login credentials will be sent after approval.\n\nBest regards,\nTeam`;
+
     await sendMail(email, subject, message);
 
     res.status(200).json({ message: "Student registered successfully!" });
   } catch (error) {
+    console.error("Error registering student:", error.message);
     res.status(500).json({ message: "Server error. Please try again." });
   }
 });
@@ -47,13 +49,43 @@ router.get("/my-events/:studentId", async (req, res) => {
 
   try {
     const registrations = await EventRegistration.find({ studentId })
-      .populate("eventId") // Populates event details like name, date, etc.
+      .populate("eventId")
       .sort({ registeredAt: -1 });
 
     res.status(200).json({ events: registrations });
   } catch (error) {
-    console.error("Error fetching registered events:", error);
+    console.error("Error fetching registered events:", error.message);
     res.status(500).json({ message: "Failed to fetch registered events." });
+  }
+});
+
+// Update Student Profile
+router.put("/update-profile/:id", async (req, res) => {
+  const { id } = req.params;
+  const { name, email, department, bio, photo } = req.body;
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ message: "Invalid or missing email address" });
+  }
+
+  try {
+    const updatedStudent = await Student.findByIdAndUpdate(
+      id,
+      { name, email, department, bio, photo },
+      { new: true }
+    );
+
+    if (!updatedStudent) {
+      return res.status(404).json({ message: "Student not found" });
+    }
+
+    res.status(200).json({
+      message: "Profile updated successfully",
+      student: updatedStudent,
+    });
+  } catch (error) {
+    console.error("Profile update error:", error.message);
+    res.status(500).json({ message: "Server error. Please try again later." });
   }
 });
 

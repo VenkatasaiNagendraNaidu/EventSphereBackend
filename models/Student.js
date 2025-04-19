@@ -8,7 +8,9 @@ const studentSchema = new mongoose.Schema({
   department: { type: String, required: true },
   gender: { type: String, required: true },
   password: { type: String, default: null },
-  approved: { type: Boolean, default:false},
+  approved: { type: Boolean, default: false },
+  bio: { type: String, default: "" }, // New field for profile bio
+  photo: { type: String, default: "" }, // New field for profile picture URL
   createdAt: { type: Date, default: Date.now },
   registeredEvents: [{ type: mongoose.Schema.Types.ObjectId, ref: "Event" }],
 });
